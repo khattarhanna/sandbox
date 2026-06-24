@@ -1,2 +1,1 @@
-Static Vercel project with one serverless function: api/config.js
-No build command required.
+Static Vercel project. No build command required.

@@ -1,0 +1,1 @@
+#app{display:block!important;grid-template-columns:none!important;width:100%!important;min-height:100vh!important}#app>.layout{width:100%!important;min-width:0!important}.content{width:100%!important;min-width:0!important}body{overflow-x:hidden!important}
