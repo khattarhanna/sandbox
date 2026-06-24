@@ -1,36 +1,146 @@
 const demoProducts=[{name:'Milk 1L',category:'Dairy',sell_price:1.35,stock_qty:42,cost_price:.82,low_stock_qty:10},{name:'Bread',category:'Bakery',sell_price:.85,stock_qty:31,cost_price:.40,low_stock_qty:8},{name:'Rice 5kg',category:'Groceries',sell_price:7.5,stock_qty:14,cost_price:5.8,low_stock_qty:5},{name:'Water 6x1.5L',category:'Beverages',sell_price:2.25,stock_qty:64,cost_price:1.4,low_stock_qty:12},{name:'Tuna Can',category:'Canned',sell_price:1.1,stock_qty:7,cost_price:.72,low_stock_qty:10},{name:'Chips',category:'Snacks',sell_price:.9,stock_qty:22,cost_price:.43,low_stock_qty:10}];
-const state={mode:'demo',sb:null,store:null,branch:null,products:[...demoProducts],cart:[],orders:[],deliveries:[],customers:[{name:'Walk-in',address:''},{name:'Maya Haddad',address:'Beirut'}],suppliers:[{name:'Fresh Distribution',phone:'01 000 111'},{name:'Daily Goods',phone:'01 222 333'}]};
+
+const state={
+  mode:'demo', sb:null, store:null, branch:null,
+  products:[...demoProducts], cart:[], orders:[], deliveries:[],
+  customers:[{name:'Walk-in',address:''},{name:'Maya Haddad',address:'Beirut'}],
+  suppliers:[{name:'Fresh Distribution',phone:'01 000 111'},{name:'Daily Goods',phone:'01 222 333'}]
+};
+
 const pages=['Dashboard','POS','Online Orders','Delivery','Inventory','Suppliers','Customers','Closing','Reports','Supabase Setup'];
 const app=document.getElementById('app');
 const money=n=>'USD '+Number(n||0).toFixed(2);
 const today=()=>new Date().toISOString().slice(0,10).replaceAll('-','');
-function msg(t){let x=document.createElement('div');x.className='toast';x.textContent=t;document.body.appendChild(x);setTimeout(()=>x.remove(),2600)}
-async function connect(){try{let c=await fetch('/api/config',{cache:'no-store'}).then(r=>r.json());if(!c.ready)throw Error('Missing Vercel Supabase variables');let m=await import('https://esm.sh/@supabase/supabase-js@2.50.0');state.sb=m.createClient(c.url,c.key);state.mode='live';}catch(e){state.mode='demo';console.warn(e.message)}}
-async function q(table,select='*'){if(!state.sb)return null;let r=await state.sb.from(table).select(select);if(r.error){console.warn(table,r.error.message);return null}return r.data||[]}
-async function loadLive(){if(!state.sb)return;let stores=await q('stores');state.store=stores?.[0]||null;let branches=await q('branches');state.branch=branches?.[0]||null;let ps=await q('products','id,name,sku,barcode,unit,cost_price,sell_price,stock_qty,low_stock_qty,product_categories(name),suppliers(name)');if(ps?.length)state.products=ps.map(p=>({...p,category:p.product_categories?.name||'Uncategorized',supplier:p.suppliers?.name||''}));state.customers=await q('customers')||state.customers;state.suppliers=await q('suppliers')||state.suppliers;state.orders=await q('orders','id,order_no,source,status,grand_total,payment_status,created_at,customers(name,address,phone)')||[];state.deliveries=await q('delivery_orders','id,order_id,driver_name,status,cash_collected,delivery_fee,orders(order_no,grand_total)')||[];}
-async function refresh(page='Dashboard'){if(state.mode==='live')await loadLive();go(page)}
-function shell(){app.innerHTML='<aside><h2>Al Hashem POS</h2><p>Market / convenience store</p>'+pages.map(p=>`<button onclick="go('${p}')">${p}</button>`).join('')+`<div class=panel><b>${state.mode==='live'?'Live Supabase':'Demo mode'}</b><br>No QR menu. Vercel ready.</div></aside><main id=view></main>`}
-function go(p){if(!document.getElementById('view'))shell();document.querySelectorAll('aside button').forEach(b=>b.classList.toggle('active',b.textContent===p));document.getElementById('view').innerHTML=views[p]();}
+
+function msg(t){const x=document.createElement('div');x.className='toast';x.textContent=t;document.body.appendChild(x);setTimeout(()=>x.remove(),2600)}
+function safe(v, fallback=''){return v ?? fallback}
+
+async function connect(){
+  try{
+    const c=await fetch('/api/config',{cache:'no-store'}).then(r=>r.json());
+    if(!c.ready) throw Error('Missing Vercel Supabase variables');
+    const m=await import('https://esm.sh/@supabase/supabase-js@2.50.0');
+    state.sb=m.createClient(c.url,c.key);
+    state.mode='live';
+  }catch(e){
+    state.mode='demo';
+    console.warn('Using demo fallback:',e.message);
+  }
+}
+
+async function q(table,select='*'){
+  if(!state.sb) return null;
+  const r=await state.sb.from(table).select(select);
+  if(r.error){console.warn(table,r.error.message);return null}
+  return r.data||[];
+}
+
+async function loadLive(){
+  if(!state.sb) return;
+  const stores=await q('stores'); state.store=stores?.[0]||null;
+  const branches=await q('branches'); state.branch=branches?.[0]||null;
+  const ps=await q('products','id,name,sku,barcode,unit,cost_price,sell_price,stock_qty,low_stock_qty,product_categories(name),suppliers(name)');
+  if(ps?.length) state.products=ps.map(p=>({...p,category:p.product_categories?.name||'Uncategorized',supplier:p.suppliers?.name||''}));
+  state.customers=await q('customers')||state.customers;
+  state.suppliers=await q('suppliers')||state.suppliers;
+  state.orders=await q('orders','id,order_no,source,status,grand_total,payment_status,created_at,customers(name,address,phone)')||[];
+  state.deliveries=await q('delivery_orders','id,order_id,driver_name,status,cash_collected,delivery_fee,orders(order_no,grand_total)')||[];
+}
+
+async function refresh(page='Dashboard'){
+  if(state.mode==='live') await loadLive();
+  shell();
+  go(page);
+}
+
+function shell(){
+  app.innerHTML='<aside><h2>Al Hashem POS</h2><p>Market / convenience store</p>'+pages.map(p=>`<button onclick="go('${p}')">${p}</button>`).join('')+`<div class=panel><b>${state.mode==='live'?'Live Supabase':'Demo mode'}</b><br>No QR menu. Vercel ready.</div></aside><main id="view"></main>`;
+}
+
+function go(p){
+  if(!document.getElementById('view')) shell();
+  document.querySelectorAll('aside button').forEach(b=>b.classList.toggle('active',b.textContent===p));
+  document.getElementById('view').innerHTML=views[p]();
+}
+
 const total=()=>state.cart.reduce((s,i)=>s+Number(i.sell_price)*i.qty,0);
-function add(i){let p=state.products[i];let c=state.cart.find(x=>x.id&&x.id===p.id||x.name===p.name);c?c.qty++:state.cart.push({...p,qty:1});go('POS')}
+function add(i){const p=state.products[i];const c=state.cart.find(x=>(x.id&&x.id===p.id)||x.name===p.name);c?c.qty++:state.cart.push({...p,qty:1});go('POS')}
+function dec(i){state.cart[i].qty--;if(state.cart[i].qty<=0)state.cart.splice(i,1);go('POS')}
 function clearCart(){state.cart=[];go('POS')}
-async function sale(){if(!state.cart.length)return alert('Cart empty');let grand=total();if(state.mode!=='live'){state.orders.push({order_no:'SALE-'+(state.orders.length+1),source:'pos',status:'completed',grand_total:grand,payment_status:'paid'});state.cart.forEach(c=>{let p=state.products.find(x=>x.name===c.name);if(p)p.stock_qty-=c.qty});state.cart=[];msg('Demo sale completed');return go('POS')}let orderNo='POS-'+today()+'-'+Date.now().toString().slice(-5);let o={store_id:state.store?.id,branch_id:state.branch?.id,order_no:orderNo,source:'pos',status:'completed',subtotal:grand,grand_total:grand,payment_status:'paid'};let r=await state.sb.from('orders').insert(o).select().single();if(r.error)return alert(r.error.message);let items=state.cart.map(c=>({order_id:r.data.id,product_id:c.id,product_name:c.name,qty:c.qty,unit_price:c.sell_price,cost_price:c.cost_price||0,line_total:c.sell_price*c.qty}));await state.sb.from('order_items').insert(items);await state.sb.from('payments').insert({order_id:r.data.id,method:'cash',amount:grand});for(let c of state.cart){await state.sb.from('products').update({stock_qty:Number(c.stock_qty)-c.qty}).eq('id',c.id);await state.sb.from('stock_movements').insert({product_id:c.id,movement_type:'sale',qty_change:-c.qty,note:orderNo})}state.cart=[];msg('Live sale saved');await refresh('POS')}
-async function online(){let sample=state.products.slice(0,2);let grand=sample.reduce((s,p)=>s+Number(p.sell_price),0);if(state.mode!=='live'){state.orders.push({order_no:'WEB-'+(state.orders.length+1),source:'online',status:'new',grand_total:grand,payment_status:'unpaid'});msg('Demo online order created');return go('Online Orders')}let cust=state.customers.find(c=>c.name!=='Walk-in')||state.customers[0];let r=await state.sb.from('orders').insert({store_id:state.store?.id,branch_id:state.branch?.id,customer_id:cust?.id,order_no:'WEB-'+today()+'-'+Date.now().toString().slice(-5),source:'online',status:'new',subtotal:grand,grand_total:grand,payment_status:'unpaid'}).select().single();if(r.error)return alert(r.error.message);await state.sb.from('order_items').insert(sample.map(p=>({order_id:r.data.id,product_id:p.id,product_name:p.name,qty:1,unit_price:p.sell_price,cost_price:p.cost_price||0,line_total:p.sell_price})));msg('Live online order saved');await refresh('Online Orders')}
-async function acceptOrder(id){if(state.mode==='live'){await state.sb.from('orders').update({status:'accepted'}).eq('id',id);await refresh('Online Orders')}else{let o=state.orders.find(x=>x.order_no===id);if(o)o.status='accepted';go('Online Orders')}}
-async function delivery(i){let o=state.orders[i];if(!o)return alert('Create order first');if(state.mode!=='live'){state.deliveries.push({id:'DEL-'+(state.deliveries.length+1),order_no:o.order_no,status:'pending',driver_name:'Unassigned',cash_collected:o.grand_total});return go('Delivery')}let r=await state.sb.from('delivery_orders').insert({order_id:o.id,driver_name:'Unassigned',customer_address:o.customers?.address||'',delivery_fee:0,status:'pending',cash_collected:o.grand_total}).select().single();if(r.error)return alert(r.error.message);msg('Delivery created');await refresh('Delivery')}
-async function setDelivery(i,status){let d=state.deliveries[i];if(state.mode==='live'){await state.sb.from('delivery_orders').update({status}).eq('id',d.id);await refresh('Delivery')}else{d.status=status;go('Delivery')}}
+
+async function sale(){
+  if(!state.cart.length) return alert('Cart empty');
+  const grand=total();
+  if(state.mode!=='live'){
+    state.orders.push({order_no:'SALE-'+(state.orders.length+1),source:'pos',status:'completed',grand_total:grand,payment_status:'paid'});
+    state.cart.forEach(c=>{const p=state.products.find(x=>x.name===c.name);if(p)p.stock_qty-=c.qty});
+    state.cart=[]; msg('Demo sale completed'); return go('POS');
+  }
+  const orderNo='POS-'+today()+'-'+Date.now().toString().slice(-5);
+  const order={store_id:state.store?.id,branch_id:state.branch?.id,order_no:orderNo,source:'pos',status:'completed',subtotal:grand,grand_total:grand,payment_status:'paid'};
+  const r=await state.sb.from('orders').insert(order).select().single();
+  if(r.error) return alert(r.error.message);
+  const items=state.cart.map(c=>({order_id:r.data.id,product_id:c.id,product_name:c.name,qty:c.qty,unit_price:c.sell_price,cost_price:c.cost_price||0,line_total:c.sell_price*c.qty}));
+  await state.sb.from('order_items').insert(items);
+  await state.sb.from('payments').insert({order_id:r.data.id,method:'cash',amount:grand});
+  for(const c of state.cart){
+    await state.sb.from('products').update({stock_qty:Number(c.stock_qty)-c.qty}).eq('id',c.id);
+    await state.sb.from('stock_movements').insert({product_id:c.id,movement_type:'sale',qty_change:-c.qty,note:orderNo});
+  }
+  state.cart=[]; msg('Live sale saved'); await refresh('POS');
+}
+
+async function online(){
+  const sample=state.products.slice(0,2); const grand=sample.reduce((s,p)=>s+Number(p.sell_price),0);
+  if(state.mode!=='live'){
+    state.orders.push({order_no:'WEB-'+(state.orders.length+1),source:'online',status:'new',grand_total:grand,payment_status:'unpaid'});
+    msg('Demo online order created'); return go('Online Orders');
+  }
+  const cust=state.customers.find(c=>c.name!=='Walk-in'&&c.name!=='Walk-in Customer')||state.customers[0];
+  const r=await state.sb.from('orders').insert({store_id:state.store?.id,branch_id:state.branch?.id,customer_id:cust?.id,order_no:'WEB-'+today()+'-'+Date.now().toString().slice(-5),source:'online',status:'new',subtotal:grand,grand_total:grand,payment_status:'unpaid'}).select().single();
+  if(r.error) return alert(r.error.message);
+  await state.sb.from('order_items').insert(sample.map(p=>({order_id:r.data.id,product_id:p.id,product_name:p.name,qty:1,unit_price:p.sell_price,cost_price:p.cost_price||0,line_total:p.sell_price})));
+  msg('Live online order saved'); await refresh('Online Orders');
+}
+
+async function acceptOrder(id){
+  if(state.mode==='live'){await state.sb.from('orders').update({status:'accepted'}).eq('id',id);return refresh('Online Orders')}
+  const o=state.orders.find(x=>x.order_no===id);if(o)o.status='accepted';go('Online Orders');
+}
+
+async function delivery(i){
+  const o=state.orders[i]; if(!o) return alert('Create order first');
+  if(state.mode!=='live'){state.deliveries.push({id:'DEL-'+(state.deliveries.length+1),order_no:o.order_no,status:'pending',driver_name:'Unassigned',cash_collected:o.grand_total});return go('Delivery')}
+  const r=await state.sb.from('delivery_orders').insert({order_id:o.id,driver_name:'Unassigned',customer_address:o.customers?.address||'',delivery_fee:0,status:'pending',cash_collected:o.grand_total}).select().single();
+  if(r.error) return alert(r.error.message);
+  msg('Delivery created'); await refresh('Delivery');
+}
+
+async function setDelivery(i,status){
+  const d=state.deliveries[i];
+  if(state.mode==='live'){await state.sb.from('delivery_orders').update({status}).eq('id',d.id);return refresh('Delivery')}
+  d.status=status; go('Delivery');
+}
+
 const low=()=>state.products.filter(p=>Number(p.stock_qty)<=Number(p.low_stock_qty||5));
 const revenue=()=>state.orders.filter(o=>['completed','paid'].includes(o.status)).reduce((s,o)=>s+Number(o.grand_total||0),0);
+const stockValue=()=>state.products.reduce((s,p)=>s+Number(p.stock_qty||0)*Number(p.cost_price||0),0);
+
 const views={
-Dashboard(){return `<h1>Dashboard</h1><div class=notice><b>${state.mode==='live'?'Live data connected':'Demo fallback'}</b> - No QR menu and no restaurant table flow.</div><div class=cards><div class=card>Today Sales<strong>${money(revenue())}</strong></div><div class=card>Open Orders<strong>${state.orders.filter(o=>o.status!=='completed').length}</strong></div><div class=card>Low Stock<strong>${low().length}</strong></div><div class=card>Products<strong>${state.products.length}</strong></div></div><div class=grid><section class=panel><h3>Open Online / Delivery Orders</h3>${state.orders.filter(o=>o.status!=='completed').map((o,i)=>`<div class=line><span><b>${o.order_no}</b> ${o.source} ${o.status}</span><b>${money(o.grand_total)}</b><button onclick='delivery(${i})'>Delivery</button></div>`).join('')||'No open orders'}</section><section class=panel><h3>Low Stock Alerts</h3>${low().map(p=>`<div class=line><span>${p.name}</span><b>${p.stock_qty}</b></div>`).join('')||'No alerts'}</section></div>`},
-POS(){return `<h1>Cashier POS</h1><div class=pos><section><input placeholder='Search barcode / SKU / name'><div class=products>${state.products.map((p,i)=>`<button class=product onclick='add(${i})'><b>${p.name}</b><span>${p.category||''}</span><strong>${money(p.sell_price)}</strong><small>Stock ${p.stock_qty}</small></button>`).join('')}</div></section><aside class=panel><h3>Cart</h3>${state.cart.map(c=>`<div class=line><span>${c.name} x ${c.qty}</span><b>${money(c.sell_price*c.qty)}</b></div>`).join('')||'Empty cart'}<hr><div class=line><b>Total</b><b>${money(total())}</b></div><button onclick='sale()'>Complete Sale</button><button onclick='clearCart()'>Clear</button></aside></div>`},
-'Online Orders'(){return `<h1>Online Store</h1><button onclick='online()'>Create Test Online Order</button>${state.orders.map((o,i)=>`<div class=order><b>${o.order_no}</b> ${o.source} - ${o.status}<span>${money(o.grand_total)}</span><button onclick="acceptOrder('${o.id||o.order_no}')">Accept</button><button onclick='delivery(${i})'>Send to Delivery</button></div>`).join('')}`},
-Delivery(){return `<h1>Delivery</h1>${state.deliveries.map((d,i)=>`<div class=order><b>${d.orders?.order_no||d.order_no||d.id}</b> ${d.status} - ${d.driver_name||'Unassigned'}<span>${money(d.cash_collected||d.orders?.grand_total)}</span><button onclick="setDelivery(${i},'out_for_delivery')">Out</button><button onclick="setDelivery(${i},'delivered')">Done</button></div>`).join('')||'<p>No deliveries yet.</p>'}`},
-Inventory(){return `<h1>Inventory</h1><table><tr><th>Product</th><th>Category</th><th>Stock</th><th>Cost</th><th>Sell</th></tr>${state.products.map(p=>`<tr><td>${p.name}</td><td>${p.category||''}</td><td>${p.stock_qty}</td><td>${money(p.cost_price)}</td><td>${money(p.sell_price)}</td></tr>`).join('')}</table>`},
-Suppliers(){return `<h1>Suppliers</h1>${state.suppliers.map(s=>`<div class=panel><b>${s.name}</b><br>${s.phone||s.email||''}</div>`).join('')}`},
-Customers(){return `<h1>Customers</h1>${state.customers.map(c=>`<div class=panel><b>${c.name}</b><br>${c.address||c.phone||'Walk-in customer'}</div>`).join('')}`},
-Closing(){let cash=revenue();return `<h1>Cashier Closing</h1><div class=panel><div class=line><span>Opening Cash</span><b>USD 100.00</b></div><div class=line><span>Expected Cash</span><b>${money(cash+100)}</b></div><input placeholder='Actual cash counted'><button>Close Shift</button></div>`},
-Reports(){let profit=state.orders.reduce((s,o)=>s+Number(o.grand_total||0)*.32,0);return `<h1>Reports</h1><div class=cards><div class=card>Revenue<strong>${money(revenue())}</strong></div><div class=card>Profit Est.<strong>${money(profit)}</strong></div><div class=card>Deliveries<strong>${state.deliveries.length}</strong></div><div class=card>Low Stock<strong>${low().length}</strong></div></div>`},
-'Supabase Setup'(){return `<h1>Supabase Setup</h1><div class=panel><h3>Status: ${state.mode==='live'?'Connected to Supabase':'Demo fallback'}</h3><p>Vercel reads NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY through /api/config.js. Run the testing seed SQL in Supabase, then redeploy or refresh.</p><button onclick="refresh('Dashboard')">Reload Live Data</button></div>`}
+  Dashboard(){return `<h1>Dashboard</h1><div class="notice"><b>${state.mode==='live'?'Live data connected':'Demo fallback'}</b> - No QR menu and no restaurant table flow.</div><div class="cards"><div class="card"><span>Today Sales</span><strong>${money(revenue())}</strong></div><div class="card"><span>Open Orders</span><strong>${state.orders.filter(o=>o.status!=='completed').length}</strong></div><div class="card"><span>Low Stock</span><strong>${low().length}</strong></div><div class="card"><span>Stock Value</span><strong>${money(stockValue())}</strong></div></div><div class="grid"><section class="panel"><h3>Open Online / Delivery Orders</h3>${state.orders.filter(o=>o.status!=='completed').map((o,i)=>`<div class="line"><span><b>${o.order_no}</b> ${o.source} <em>${o.status}</em></span><b>${money(o.grand_total)}</b><button onclick="delivery(${i})">Delivery</button></div>`).join('')||'No open orders'}</section><section class="panel"><h3>Low Stock Alerts</h3>${low().map(p=>`<div class="line"><span>${p.name}</span><b>${p.stock_qty}</b></div>`).join('')||'No alerts'}</section></div>`},
+  POS(){return `<h1>Cashier POS</h1><div class="pos"><section><input placeholder="Search barcode / SKU / name" oninput="filterProducts(this.value)"><div class="products" id="productGrid">${productCards(state.products)}</div></section><aside class="panel"><h3>Cart</h3>${state.cart.map((c,i)=>`<div class="line"><span>${c.name} x ${c.qty}</span><b>${money(c.sell_price*c.qty)}</b><button class="secondary" onclick="dec(${i})">-</button></div>`).join('')||'Empty cart'}<hr><div class="line"><b>Total</b><b>${money(total())}</b></div><button onclick="sale()">Complete Sale</button><button class="secondary" onclick="clearCart()">Clear</button></aside></div>`},
+  'Online Orders'(){return `<h1>Online Store</h1><button onclick="online()">Create Test Online Order</button>${state.orders.map((o,i)=>`<div class="order"><div><b>${o.order_no}</b> <span class="pill">${o.source}</span> <span class="pill">${o.status}</span><br><span class="muted">${safe(o.customers?.name,'Customer')}</span></div><div><b>${money(o.grand_total)}</b><button onclick="acceptOrder('${o.id||o.order_no}')">Accept</button><button onclick="delivery(${i})">Send to Delivery</button></div></div>`).join('')}`},
+  Delivery(){return `<h1>Delivery</h1>${state.deliveries.map((d,i)=>`<div class="order"><div><b>${d.orders?.order_no||d.order_no||d.id}</b> <span class="pill">${d.status}</span><br><span class="muted">${d.driver_name||'Unassigned'}</span></div><div><b>${money(d.cash_collected||d.orders?.grand_total)}</b><button onclick="setDelivery(${i},'out_for_delivery')">Out</button><button onclick="setDelivery(${i},'delivered')">Done</button></div></div>`).join('')||'<p>No deliveries yet.</p>'}`},
+  Inventory(){return `<h1>Inventory</h1><table><tr><th>Product</th><th>Category</th><th>SKU</th><th>Barcode</th><th>Stock</th><th>Cost</th><th>Sell</th></tr>${state.products.map(p=>`<tr><td>${p.name}</td><td>${p.category||''}</td><td>${safe(p.sku)}</td><td>${safe(p.barcode)}</td><td class="${Number(p.stock_qty)<=Number(p.low_stock_qty||5)?'bad':''}">${p.stock_qty}</td><td>${money(p.cost_price)}</td><td>${money(p.sell_price)}</td></tr>`).join('')}</table>`},
+  Suppliers(){return `<h1>Suppliers</h1>${state.suppliers.map(s=>`<div class="panel"><b>${s.name}</b><br><span class="muted">${s.phone||s.email||''}</span></div>`).join('')}`},
+  Customers(){return `<h1>Customers</h1>${state.customers.map(c=>`<div class="panel"><b>${c.name}</b><br><span class="muted">${c.address||c.phone||'Walk-in customer'}</span></div>`).join('')}`},
+  Closing(){const cash=revenue();return `<h1>Cashier Closing</h1><div class="panel"><div class="line"><span>Opening Cash</span><b>USD 100.00</b></div><div class="line"><span>Expected Cash</span><b>${money(cash+100)}</b></div><input placeholder="Actual cash counted"><button>Close Shift</button></div>`},
+  Reports(){const profit=state.orders.reduce((s,o)=>s+Number(o.grand_total||0)*.32,0);return `<h1>Reports</h1><div class="cards"><div class="card"><span>Revenue</span><strong>${money(revenue())}</strong></div><div class="card"><span>Profit Est.</span><strong>${money(profit)}</strong></div><div class="card"><span>Deliveries</span><strong>${state.deliveries.length}</strong></div><div class="card"><span>Low Stock</span><strong>${low().length}</strong></div></div>`},
+  'Supabase Setup'(){return `<h1>Supabase Setup</h1><div class="panel"><h3>Status: ${state.mode==='live'?'Connected to Supabase':'Demo fallback'}</h3><p>Vercel reads <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> through <code>/api/config.js</code>.</p><p>Run <code>supabase-schema.sql</code>, then <code>testing-data.sql</code> in Supabase SQL Editor.</p><button onclick="refresh('Dashboard')">Reload Live Data</button></div>`}
 };
-window.go=go;window.add=add;window.clearCart=clearCart;window.sale=sale;window.online=online;window.delivery=delivery;window.acceptOrder=acceptOrder;window.setDelivery=setDelivery;window.refresh=refresh;(async()=>{shell();await connect();await refresh('Dashboard')})();
+
+function productCards(list){return list.map(p=>`<button class="product" onclick="add(${state.products.indexOf(p)})"><b>${p.name}</b><span>${p.category||''}</span><strong>${money(p.sell_price)}</strong><small>Stock ${p.stock_qty}</small></button>`).join('')}
+function filterProducts(v){const term=v.toLowerCase();const list=state.products.filter(p=>[p.name,p.sku,p.barcode,p.category].join(' ').toLowerCase().includes(term));document.getElementById('productGrid').innerHTML=productCards(list)}
+
+Object.assign(window,{go,add,dec,clearCart,sale,online,delivery,acceptOrder,setDelivery,refresh,filterProducts});
+(async()=>{shell();await connect();await refresh('Dashboard')})();

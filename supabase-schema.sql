@@ -143,8 +143,6 @@ create table if not exists cashier_sessions (
   closed_at timestamptz
 );
 
-insert into stores (name, phone, address) values ('Al Hashem Market', '+961 00 000 000', 'Main Branch') on conflict do nothing;
-
 alter table stores enable row level security;
 alter table branches enable row level security;
 alter table product_categories enable row level security;
@@ -158,7 +156,7 @@ alter table delivery_orders enable row level security;
 alter table stock_movements enable row level security;
 alter table cashier_sessions enable row level security;
 
--- Demo policies for static browser MVP only. Replace before production.
+-- Demo policies for MVP testing only. Replace before production.
 do $$ begin
   create policy demo_all_stores on stores for all using (true) with check (true);
   create policy demo_all_branches on branches for all using (true) with check (true);
