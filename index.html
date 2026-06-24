@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Al Hashem Market POS</title>
+    <meta name="description" content="Market and convenience store POS with online ordering, delivery, inventory, suppliers, customers, cashier sessions, reports, and Supabase readiness." />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-logo">AH</div>
+          <div>
+            <p class="eyebrow">Market Suite</p>
+            <h1>Al Hashem POS</h1>
+          </div>
+        </div>
+
+        <nav class="nav" id="mainNav" aria-label="Main navigation"></nav>
+
+        <div class="sidebar-card">
+          <span class="status-dot"></span>
+          <div>
+            <strong id="dataModeLabel">Demo mode</strong>
+            <small>Static now. Supabase ready.</small>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Convenience store system</p>
+            <h2 id="pageTitle">Dashboard</h2>
+          </div>
+          <div class="topbar-actions">
+            <button class="ghost-btn" id="exportBtn">Export Data</button>
+            <button class="primary-btn" data-page="pos">Open POS</button>
+          </div>
+        </header>
+
+        <section class="notice">
+          <strong>No QR menu and no restaurant table flow.</strong>
+          This build is for a market / convenience store: cashier POS, online ordering, delivery, inventory, suppliers, customers, closing, and reports.
+        </section>
+
+        <section id="view" class="view"></section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="modal-backdrop" id="modalBackdrop" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-head">
+          <h3 id="modalTitle">Dialog</h3>
+          <button class="icon-btn" id="modalClose" aria-label="Close dialog">×</button>
+        </div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
