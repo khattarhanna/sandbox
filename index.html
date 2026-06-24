@@ -1,13 +1,20 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
   <title>Al Hashem Market POS</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="theme.css">
 </head>
-<body>
-  <div id="app">Loading Al Hashem Market POS...</div>
-  <script type="module" src="app.js"></script>
+<body onload="import('./app.js')">
+  <div id="app" class="boot-screen">
+    <div class="boot-card">
+      <div class="brand-mark">AH</div>
+      <h1>Al Hashem Market POS</h1>
+      <p>Loading live Supabase data...</p>
+    </div>
+  </div>
 </body>
 </html>
