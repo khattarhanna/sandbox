@@ -2,23 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0f172a">
-  <title>Al Hashem Market POS</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="theme.css">
-  <link rel="stylesheet" href="light-mode.css">
-  <link rel="stylesheet" href="pos-pro.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10151a">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Auto Parts Project — a new online destination for vehicle parts. Our catalog is coming soon.">
+  <title>Auto Parts Project | Built for Precision</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
 </head>
-<body onload="import('./app.js')">
-  <div id="app" class="boot-screen">
-    <div class="boot-card">
-      <div class="brand-mark">AH</div>
-      <h1>Al Hashem Market POS</h1>
-      <p>Loading live Supabase data...</p>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" aria-label="Auto Parts Project home"><span class="brand-mark">AP<span class="brand-dot">.</span></span><span class="brand-name">AUTO PARTS <small>PROJECT</small></span></a>
+      <nav aria-label="Main navigation"><a href="#categories">Categories</a><a href="#approach">Our approach</a></nav>
+      <span class="header-tag"><span class="pulse"></span> IN DEVELOPMENT</span>
     </div>
-  </div>
-  <script src="theme-toggle.js"></script>
-  <script src="pos-pro.js"></script>
+  </header>
+  <main id="main">
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="eyebrow-rule"></span> AUTO PARTS, REIMAGINED</div>
+          <h1>THE RIGHT PART.<br><span>THE FIRST TIME.</span></h1>
+          <p class="lead">A smarter destination for finding the components that keep you moving. We're building a new automotive parts experience, designed around clarity and compatibility.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#categories">Explore categories <span aria-hidden="true">↗</span></a><a class="button button-quiet" href="#approach">What we're building <span aria-hidden="true">→</span></a></div>
+          <p class="disclaimer"><span class="asterisk">✳</span> Preview website. Product listings, stock and ordering are not yet available.</p>
+        </div>
+        <div class="hero-art" role="img" aria-label="Technical illustration of a brake rotor and automotive components">
+          <div class="art-grid"></div>
+          <div class="art-top">ENGINEERED FOR THE ROAD <span>01 / 06</span></div>
+          <svg class="rotor" viewBox="0 0 540 540" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="270" cy="270" r="199" stroke="#303b41" stroke-width="1" stroke-dasharray="4 9"/>
+            <circle cx="270" cy="270" r="173" stroke="#9faaad" stroke-width="24"/>
+            <circle cx="270" cy="270" r="139" stroke="#49565c" stroke-width="2"/>
+            <circle cx="270" cy="270" r="116" stroke="#747f82" stroke-width="35"/>
+            <circle cx="270" cy="270" r="76" stroke="#f0f0e8" stroke-width="2"/>
+            <circle cx="270" cy="270" r="51" fill="#131b20" stroke="#bbc5c3" stroke-width="11"/>
+            <circle cx="270" cy="270" r="23" stroke="#d8dfdb" stroke-width="7"/>
+            <g fill="#182126" stroke="#b9c3c1" stroke-width="4">
+              <circle cx="270" cy="217" r="9"/><circle cx="320" cy="254" r="9"/><circle cx="301" cy="312" r="9"/><circle cx="238" cy="312" r="9"/><circle cx="220" cy="254" r="9"/>
+            </g>
+            <g stroke="#56656a" stroke-width="6" stroke-linecap="round">
+              <path d="M270 130v24 M340 149l-10 23 M390 198l-23 11 M411 270h-25 M391 343l-23-10 M341 393l-11-22 M270 411v-25 M199 391l10-23 M149 342l23-11 M129 270h25 M149 199l23 10 M199 149l10 23"/>
+            </g>
+            <path d="M396 141c42 11 76 46 81 85l-8 75-42 19-24-20-2-90-21-24 16-45Z" fill="#d6fd42" stroke="#10151a" stroke-width="7"/>
+            <path d="M433 181l20 43-2 53" stroke="#152020" stroke-width="9" stroke-linecap="round"/>
+            <path d="M132 140 105 110 M409 404l34 35" stroke="#d6fd42" stroke-width="2"/>
+          </svg>
+          <div class="art-label">01 <span>Precision components</span></div>
+          <div class="art-bottom"><span>FITMENT-FIRST THINKING</span><span>● ● ●</span></div>
+        </div>
+      </div>
+      <div class="hero-bottom"><div class="container hero-bottom-inner"><span>PARTS & COMPONENTS</span><span>COMPATIBILITY FIRST</span><span>BUILT TO MOVE</span></div></div>
+    </section>
+    <section class="categories section" id="categories">
+      <div class="container">
+        <div class="section-heading"><div><span class="section-index">01 / EXPLORE</span><h2>EVERY PART<br><em>HAS A PURPOSE.</em></h2></div><p>Explore the core categories planned for our upcoming catalog. These are category previews, not live inventory.</p></div>
+        <div class="category-toolbar"><label for="category-search" class="search-wrap"><span class="search-icon" aria-hidden="true">⌕</span><input id="category-search" type="search" placeholder="Search categories..." autocomplete="off"><span class="search-shortcut">CATEGORY FINDER</span></label><span id="results-count" class="results-count" aria-live="polite">06 CATEGORIES</span></div>
+        <div class="category-grid" id="category-grid">
+          <article class="category-card" data-search="filters service oil air cabin maintenance"><span class="category-num">01</span><span class="category-symbol" aria-hidden="true">◎</span><div><h3>Filters & Service</h3><p>Oil, air, cabin and routine maintenance components.</p></div><span class="card-arrow" aria-hidden="true">↗</span></article>
+          <article class="category-card" data-search="brakes brake systems rotors pads calipers"><span class="category-num">02</span><span class="category-symbol" aria-hidden="true">◉</span><div><h3>Brake Systems</h3><p>Pads, discs, calipers and braking essentials.</p></div><span class="card-arrow" aria-hidden="true">↗</span></article>
+          <article class="category-card" data-search="engine drivetrain belts gaskets components"><span class="category-num">03</span><span class="category-symbol" aria-hidden="true">⬡</span><div><h3>Engine & Drivetrain</h3><p>Engine systems, belts, gaskets and drivetrain parts.</p></div><span class="card-arrow" aria-hidden="true">↗</span></article>
+          <article class="category-card" data-search="suspension steering shocks bushings arms"><span class="category-num">04</span><span class="category-symbol" aria-hidden="true">⌁</span><div><h3>Suspension & Steering</h3><p>Shocks, control arms, bushings and steering components.</p></div><span class="card-arrow" aria-hidden="true">↗</span></article>
+          <article class="category-card" data-search="electrical lighting batteries alternators lamps"><span class="category-num">05</span><span class="category-symbol" aria-hidden="true">ϟ</span><div><h3>Electrical & Lighting</h3><p>Batteries, alternators, sensors and lighting.</p></div><span class="card-arrow" aria-hidden="true">↗</span></article>
+          <article class="category-card" data-search="body exterior mirrors trim panels bumpers"><span class="category-num">06</span><span class="category-symbol" aria-hidden="true">◇</span><div><h3>Body & Exterior</h3><p>Panels, mirrors, trim and exterior replacement parts.</p></div><span class="card-arrow" aria-hidden="true">↗</span></article>
+        </div>
+        <p class="empty-results" id="empty-results" hidden>No matching categories. Try a different search term.</p>
+      </div>
+    </section>
+    <section class="approach section" id="approach">
+      <div class="container approach-grid">
+        <div><span class="section-index">02 / OUR APPROACH</span><h2>LESS GUESSWORK.<br><em>MORE CONFIDENCE.</em></h2><p>We're designing the experience around three practical steps. These features are planned and are not active in this preview.</p></div>
+        <div class="steps">
+          <div class="step"><span>01</span><div><h3>Identify your vehicle</h3><p>Start with the details that matter for part compatibility.</p></div><b>↗</b></div>
+          <div class="step"><span>02</span><div><h3>Find the correct part</h3><p>Browse an organized catalog with clear part information.</p></div><b>↗</b></div>
+          <div class="step"><span>03</span><div><h3>Request or order</h3><p>Move from selection to the next step without confusion.</p></div><b>↗</b></div>
+        </div>
+      </div>
+    </section>
+    <section class="closing"><div class="container closing-inner"><div><span class="section-index">THE NEXT GEAR</span><h2>WE'RE JUST<br>GETTING <em>STARTED.</em></h2><p>This is the first foundation build of Auto Parts Project. A real catalog, fitment data, and ordering can be added once requirements are defined.</p></div><a class="button button-dark" href="#home">Back to top ↑</a></div></section>
+  </main>
+  <footer class="footer"><div class="container footer-inner"><span>AUTO PARTS <strong>PROJECT</strong></span><span>FOUNDATION PREVIEW · 2026</span><span>BUILT FOR PRECISION.</span></div></footer>
 </body>
 </html>

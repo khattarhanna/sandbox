@@ -1,1 +1,0 @@
-Static Vercel project. No build command required.
