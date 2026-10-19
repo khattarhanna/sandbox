@@ -86,3 +86,22 @@
   .hero-bottom h1{font-size:clamp(31px,8.2vw,44px);line-height:.98;}
   .hero-bottom p{max-width:290px;line-height:1.45;}
 }
+
+/* Hero position alignment: move the ENTIRE photographic assembly down,
+   rather than shifting the final car alone (which would break the 15-part docking). */
+.hero-canvas.mz-photographic-assembly{
+  top:50%;
+  width:min(1160px,90vw);
+}
+@media(max-width:900px){
+  .hero-canvas.mz-photographic-assembly{
+    top:48%;
+    width:98vw;
+  }
+}
+@media(max-width:480px){
+  .hero-canvas.mz-photographic-assembly{
+    top:47%;
+    width:101vw;
+  }
+}

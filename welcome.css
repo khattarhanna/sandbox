@@ -117,3 +117,15 @@
 .mz-welcome-portal{will-change:auto}
 .mz-welcome-title{color:#fff}
 }
+
+/* Longer, realistic Motorzone headline: responsive typography that avoids clipping. */
+.mz-welcome-title{
+  font-size:clamp(62px,7.3vw,119px);
+  letter-spacing:-.07em;
+}
+@media(max-width:760px){
+  .mz-welcome-title{font-size:clamp(48px,10.7vw,78px)}
+}
+@media(max-width:490px){
+  .mz-welcome-title{font-size:clamp(40px,10.5vw,65px)}
+}
