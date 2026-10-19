@@ -1,27 +1,36 @@
-# Auto Parts Project
+# Motorzone Auto Parts — storefront prototype
 
-A fresh, responsive website foundation for a future automotive parts catalog.
+**Status:** Production-deployed visual prototype only. No customer orders or payments are processed.
 
-## Status
+## Design brief
 
-**Foundation preview only.** The public-facing page intentionally contains no real product inventory, pricing, customer data, ordering, payments, or vehicle compatibility database.
+- Uses the logo mark traced from the owner's supplied image (black/white and Motorzone orange).
+- Reinterprets the owner's "Analogue" UI reference: black product gallery, monochrome typography, rounded 17.6px cards, light catalog section, white pill CTA.
+- Hero shows an illustrative automotive front-end assembly. During scrolling, separate SVG components animate from exploded offsets to aligned positions. Reduced-motion preference is respected.
+- Hyundai Kona product examples derive from a Motorzone reference advertisement uploaded by the owner.
 
-## Structure
+## Features
 
-- `index.html`: accessible landing page and planned categories
-- `styles.css`: responsive visual system
-- `app.js`: working category search/filter
-- `favicon.svg`: project icon
-- `robots.txt`: prevents indexing until ready
+- Responsive desktop/mobile UI and accessible navigation
+- Filterable and searchable sample catalog of 15 body parts
+- Vehicle selector preview (Hyundai Kona only)
+- Local-browser parts list and copyable quotation-request draft
+- Scroll-driven component assembly; no external animation library
+- Illustration labels avoid pretending real product photography
+- No fake prices, live inventory, fitment guarantees, orders, payments, or live contact service
 
-## Deployment
+## Production build
 
-This is a static website and runs on Vercel with **Framework Preset: Other**, **Root Directory: project root**, and no build command.
+Static project: `index.html`, `styles.css`, `app.js`, `logo-light.svg`, `logo-dark.svg`, `robots.txt`.
 
-## Next steps
+No build or install command. Vercel framework setting: Other. Both development and production deployments can serve the root.
 
-Define brand name, region/currency, vehicle makes, real catalog data source, fitment rules, inventory policy, customer authentication, orders/payment, and contact details before implementing a store.
+## Needed to become real e-commerce
 
-## Prior project
+1. Confirm Motorzone company details, domain and contact channels.
+2. Obtain part SKUs, high-resolution product imagery, makes/models/years/fitment identifiers, stock, pricing, taxation and currency.
+3. Choose checkout policies, shipping zones, returns, payment gateway.
+4. Set up backend (catalog, authentication, inventory, orders, secure admin panel) with protected keys, webhook verification and storage.
+5. Test ordering and delivery end-to-end before accepting sales.
 
-Replaces the **Al Hashem Market POS** source files on the active branch as expressly requested by the owner on 2026-10-19. Git history and historical Vercel deployments may still retain older source and must be addressed separately for full irreversible purging. No Supabase database was changed by this repository replacement.
+The prior Al Hashem POS app was replaced on the active branch on 2026-10-19; earlier Git history and historical Vercel deployments may retain earlier code. Old POS Supabase Vercel environment variables were disabled in the preceding step, but original credentials must still be revoked from their source if they are active.
