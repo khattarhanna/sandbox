@@ -48,3 +48,41 @@
   .mz-photographic-assembly .mz-parts-group{display:none}
   .mz-photographic-assembly .mz-final-car{opacity:1!important}
 }
+/* Transparent visual cutout of the finished Kona:
+   the silhouette follows the extracted car contour in the 1280×720 source.
+   This clips away its original black studio photograph (including floor reflections)
+   while keeping the shared Motorzone neon environment visible behind the vehicle. */
+.mz-photographic-assembly .mz-final-car{
+  background:transparent!important;
+  clip-path:polygon(
+89.45% 41.53%,88.83% 40.28%,88.52% 36.11%,87.19% 33.47%,87.50% 32.64%,87.34% 29.31%,
+86.25% 28.47%,84.92% 26.39%,81.17% 16.81%,78.59% 15.56%,76.80% 13.06%,70.47% 11.39%,
+70.23% 9.17%,69.69% 9.17%,68.98% 10.56%,67.81% 11.25%,57.03% 10.97%,51.02% 11.94%,
+51.80% 11.94%,51.80% 12.36%,46.95% 13.19%,42.50% 15.42%,44.14% 13.06%,37.50% 19.44%,
+32.03% 26.39%,29.69% 26.67%,28.75% 28.89%,29.84% 29.31%,28.59% 31.11%,24.69% 31.25%,
+19.92% 32.78%,14.77% 36.94%,12.19% 39.72%,11.33% 44.31%,10.31% 46.67%,10.78% 48.61%,
+10.55% 49.03%,9.84% 48.06%,9.61% 49.17%,9.45% 53.61%,10.47% 55.28%,10.47% 58.19%,
+9.92% 58.19%,9.30% 60.97%,9.53% 62.92%,9.30% 63.47%,9.77% 64.44%,9.61% 66.53%,
+12.73% 70.83%,14.14% 73.75%,15.62% 75.28%,16.72% 73.75%,21.80% 74.03%,22.42% 75.42%,
+26.80% 75.69%,27.58% 75.42%,28.28% 73.61%,32.19% 74.17%,32.66% 73.33%,42.97% 73.33%,
+44.22% 75.42%,44.77% 77.36%,46.56% 80.14%,51.72% 81.67%,53.75% 81.39%,55.16% 80.14%,
+56.56% 77.78%,57.73% 69.17%,61.09% 68.19%,61.80% 67.22%,61.72% 66.25%,70.94% 63.47%,
+76.72% 63.19%,77.50% 63.75%,80.16% 63.06%,80.94% 64.44%,81.02% 66.94%,82.03% 70.14%,
+83.28% 71.25%,84.84% 71.39%,86.88% 67.78%,88.12% 63.06%,88.20% 59.58%,88.91% 58.47%,
+89.45% 56.25%,89.77% 50.69%);
+  will-change:opacity;
+}
+.mz-photographic-assembly{
+  background:transparent!important;
+}
+/* Car stays fully within the available viewport instead of cropping on small devices. */
+@media(max-width:900px){
+  .hero-canvas.mz-photographic-assembly{width:100vw;max-width:none;top:40%;}
+  .hero-bottom{padding-bottom:clamp(28px,5svh,52px);}
+}
+@media(max-width:480px){
+  .hero-canvas.mz-photographic-assembly{width:104vw;top:39%;}
+  .hero-bottom{padding:16px 12px max(30px,env(safe-area-inset-bottom));}
+  .hero-bottom h1{font-size:clamp(31px,8.2vw,44px);line-height:.98;}
+  .hero-bottom p{max-width:290px;line-height:1.45;}
+}

@@ -42,12 +42,13 @@
   const range = (p, from, to) => clamp((p - from) / (to - from));
   let target = 0;
   let current = 0;
+  let stageWidth = hero.getBoundingClientRect().width;
+  let isCompact = window.innerWidth < 680;
   let animating = false;
   let lastFrameTime = 0;
   function paint(p){
-    const stageWidth = hero.getBoundingClientRect().width;
     const multiplier = Math.min(1, stageWidth / 1280);
-    const mobileFactor = window.innerWidth < 680 ? .78 : 1;
+    const mobileFactor = isCompact ? .65 : 1;
     pieces.forEach((part, i) => {
       // Compact stagger; parts individually travel and finish before the complete car appears.
       const start = Math.min(.105, i * .007);
@@ -78,7 +79,7 @@
     const elapsed = lastFrameTime ? Math.min(64, now - lastFrameTime) : 16.7;
     lastFrameTime = now;
     // Exponential smoothing: responsive yet soft at 60/120 Hz and on touch scroll.
-    const blend = reduced.matches ? 1 : 1 - Math.exp(-elapsed / 130);
+    const blend = reduced.matches ? 1 : 1 - Math.exp(-elapsed / (isCompact ? 165 : 140));
     current += (target - current) * blend;
     if(Math.abs(target - current) < .00035) current = target;
     paint(current);
@@ -89,8 +90,13 @@
       lastFrameTime = 0;
     }
   }
+  function onResize(){
+    stageWidth = hero.getBoundingClientRect().width;
+    isCompact = window.innerWidth < 680;
+    updateTarget();
+  }
   window.addEventListener('scroll',updateTarget,{passive:true});
-  window.addEventListener('resize',updateTarget,{passive:true});
+  window.addEventListener('resize',onResize,{passive:true});
   if(reduced.addEventListener) reduced.addEventListener('change',updateTarget);
   updateTarget();
   // Maintain photorealistic catalog images from the previous media update.
