@@ -44,7 +44,7 @@
 .mz-experience-scene > .mz-welcome,
 .mz-experience-scene > .hero-scroll {position:relative;z-index:1;background:transparent!important}
 .mz-experience-scene .hero-sticky {background:transparent!important;isolation:isolate;
-  opacity:var(--mz-assembly-entrance,1);transition:none;}
+  opacity:1;transition:none;}
 .mz-experience-scene .hero-canvas.mz-photographic-assembly {background:transparent!important}
 .mz-experience-scene .hero-sticky::before {content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:.8;
  background:radial-gradient(ellipse 57% 70% at 76% 40%,rgba(25,184,255,.10),transparent 80%),
@@ -98,5 +98,68 @@ html.mz-mercury-motion .mz-mercury-reveal.mz-mercury-visible {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+}
+
+/* 2026-10-19: Intentional breathing room between the welcome and the
+   separate-part assembly, within one uninterrupted neon environment. */
+.mz-experience-scene > .mz-scene-bridge {
+  height:clamp(96px,16svh,165px);
+  min-height:96px;
+  position:relative;
+  z-index:1;
+  background:transparent;
+  pointer-events:none;
+  overflow:hidden;
+}
+.mz-scene-bridge-haze {
+  position:absolute;
+  inset:-90px 18% -80px;
+  background:radial-gradient(ellipse at 50% 48%,rgba(25,168,230,.11),transparent 72%);
+  opacity:.8;
+}
+.mz-scene-bridge-thread {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:50%;
+  width:1px;
+  transform:translateX(-50%);
+  background:linear-gradient(to bottom,transparent,rgba(31,197,244,.38) 43%,rgba(255,76,22,.45) 73%,transparent);
+  box-shadow:0 0 16px rgba(37,197,242,.28);
+}
+.mz-scene-bridge-spark {
+  position:absolute;
+  left:50%;
+  top:68%;
+  width:4px;
+  height:4px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:#ff5b2b;
+  box-shadow:0 0 15px 3px rgba(255,83,33,.43);
+}
+/* Fade *individual* parts and hero captions into view; never fade the
+   sticky hero container as a single preassembled frame. JS sets both values. */
+#exploded-hero.mz-parts-intro .hero-top,
+#exploded-hero.mz-parts-intro .stage-badge,
+#exploded-hero.mz-parts-intro .stage-counter,
+#exploded-hero.mz-parts-intro .hero-bottom,
+#exploded-hero.mz-parts-intro .scroll-rail {
+  opacity:var(--mz-hero-cues,0);
+}
+@media(max-width:760px) {
+  .mz-experience-scene > .mz-scene-bridge {
+    height:clamp(64px,11svh,105px);
+    min-height:64px;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  #exploded-hero.mz-parts-intro .hero-top,
+  #exploded-hero.mz-parts-intro .stage-badge,
+  #exploded-hero.mz-parts-intro .stage-counter,
+  #exploded-hero.mz-parts-intro .hero-bottom,
+  #exploded-hero.mz-parts-intro .scroll-rail {
+    opacity:1!important;
   }
 }

@@ -15,7 +15,6 @@
       scene.style.setProperty('--mz-welcome-art','1');
       scene.style.setProperty('--mz-welcome-copy','1');
       scene.style.setProperty('--mz-welcome-footer','1');
-      scene.style.setProperty('--mz-assembly-entrance','1');
       return;
     }
     const viewport=Math.max(1,window.innerHeight);
@@ -25,9 +24,6 @@
     scene.style.setProperty('--mz-welcome-art',(1-0.93*p).toFixed(3));
     scene.style.setProperty('--mz-welcome-copy',(1-0.65*p).toFixed(3));
     scene.style.setProperty('--mz-welcome-footer',(1-0.48*p).toFixed(3));
-    const assemblyEdge=assembly.getBoundingClientRect().top;
-    const reveal=easing(clamp((viewport-assemblyEdge)/(viewport*0.88)));
-    scene.style.setProperty('--mz-assembly-entrance',reveal.toFixed(3));
   }
   const schedule=()=>{if(!scheduled){scheduled=true;requestAnimationFrame(paint);}};
   window.addEventListener('scroll',schedule,{passive:true});

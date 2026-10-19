@@ -42,11 +42,14 @@
   const range = (p, from, to) => clamp((p - from) / (to - from));
   let target = 0;
   let current = 0;
+  let introTarget = 0;
+  let introCurrent = 0;
   let stageWidth = hero.getBoundingClientRect().width;
   let isCompact = window.innerWidth < 680;
   let animating = false;
   let lastFrameTime = 0;
-  function paint(p){
+  zone.classList.add('mz-parts-intro');
+  function paint(p, intro){
     const multiplier = Math.min(1, stageWidth / 1280);
     const mobileFactor = isCompact ? .65 : 1;
     pieces.forEach((part, i) => {
@@ -55,9 +58,15 @@
       const t = ease(range(p, start, .85));
       const leftover = 1 - t;
       const [x,y,rotation,scale] = part.motion;
+      // Individually reveal the pieces as the assembly section scrolls into view.
+      // At the welcome boundary nothing is shown; each layer gains opacity in sequence.
+      const revealOffset = Math.min(.29, i * .020);
+      const appearing = reduced.matches ? 1 : ease(range(intro, revealOffset, .64 + revealOffset));
+      part.el.style.opacity = appearing.toFixed(3);
       part.el.style.transform = `translate3d(${(x*multiplier*mobileFactor*leftover).toFixed(2)}px, ${(y*multiplier*mobileFactor*leftover).toFixed(2)}px, 0) rotate(${(rotation*leftover).toFixed(2)}deg) scale(${(1+(scale-1)*leftover).toFixed(4)})`;
     });
     // Pure black behind independent parts; crossfade only once the layers have docked.
+    zone.style.setProperty('--mz-hero-cues', (reduced.matches ? 1 : ease(range(intro, .08, .78))).toFixed(3));
     const reveal = ease(range(p, .87, .985));
     group.style.opacity = String(1 - reveal);
     final.style.opacity = String(reveal);
@@ -69,6 +78,12 @@
   function updateTarget() {
     const distance = Math.max(1, zone.offsetHeight - window.innerHeight);
     target = reduced.matches ? 1 : clamp(-zone.getBoundingClientRect().top / distance);
+    // Start materializing components only when the assembly enters the lower
+    // half of the viewport, completing their entrance near the sticky position.
+    const approachDistance = Math.max(1, window.innerHeight * .46);
+    introTarget = reduced.matches ? 1 : ease(clamp(
+      (window.innerHeight * .55 - zone.getBoundingClientRect().top) / approachDistance
+    ));
     if(!animating) {
       animating = true;
       lastFrameTime = 0;
@@ -81,9 +96,11 @@
     // Exponential smoothing: responsive yet soft at 60/120 Hz and on touch scroll.
     const blend = reduced.matches ? 1 : 1 - Math.exp(-elapsed / (isCompact ? 165 : 140));
     current += (target - current) * blend;
+    introCurrent += (introTarget - introCurrent) * blend;
     if(Math.abs(target - current) < .00035) current = target;
-    paint(current);
-    if(current !== target) {
+    if(Math.abs(introTarget - introCurrent) < .00035) introCurrent = introTarget;
+    paint(current, introCurrent);
+    if(current !== target || introCurrent !== introTarget) {
       requestAnimationFrame(frame);
     } else {
       animating = false;
