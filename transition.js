@@ -35,3 +35,55 @@
   if(reduced.addEventListener) reduced.addEventListener('change',schedule);
   paint();
 })();
+
+
+/* Mercury-inspired sectional reveal: understated fades + minimal vertical lift.
+   All Motorzone content and the existing neon/Kona hero motion stay unchanged. */
+(() => {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (reduced.matches || !('IntersectionObserver' in window)) return;
+  const groups = [
+    ['.between .between-inner'],
+    ['.intro .section-tag', '.intro h2', '.intro > p', '.intro .intro-icons'],
+    ['.light-area .section-heading', '.light-area .category-strip',
+     '.light-area .shop-tools', '.light-area .filter-chips',
+     '.light-area .result-meta', '.light-area .products-grid'],
+    ['.vehicle-section .vehicle-layout > div', '.vehicle-section .finder'],
+    ['.story .story-art', '.story .story-copy'],
+    ['.cta-band .container'],
+    ['.footer .footer-content', '.footer .footer-bottom']
+  ];
+  const viewport = window.innerHeight;
+  const pending = [];
+  for (const selectors of groups) {
+    selectors.forEach((selector, index) => {
+      document.querySelectorAll(selector).forEach(el => {
+        const rect = el.getBoundingClientRect();
+        // Do not obscure content already in view, including direct hash visits.
+        if (rect.top < viewport * .86 && rect.bottom > 0) return;
+        el.classList.add('mz-mercury-reveal');
+        el.style.setProperty('--mz-mercury-delay', Math.min(index * 55, 165) + 'ms');
+        pending.push(el);
+      });
+    });
+  }
+  if (!pending.length) return;
+  document.documentElement.classList.add('mz-mercury-motion');
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.add('mz-mercury-visible');
+      observer.unobserve(entry.target);
+    }
+  }, {threshold: 0, rootMargin: '0px 0px -7% 0px'});
+  pending.forEach(el => observer.observe(el));
+  // Safety: user accessibility preference may change while navigating.
+  if (reduced.addEventListener) reduced.addEventListener('change', () => {
+    if (!reduced.matches) return;
+    pending.forEach(el => {
+      el.classList.add('mz-mercury-visible');
+      observer.unobserve(el);
+    });
+    document.documentElement.classList.remove('mz-mercury-motion');
+  });
+})();
