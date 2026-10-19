@@ -7,13 +7,6 @@
   const asset = filename => '/assets/' + filename;
   hero.replaceChildren();
   hero.className = 'hero-canvas mz-photographic-assembly';
-  const ghost = document.createElement('img');
-  ghost.className = 'mz-car-ghost';
-  ghost.src = asset('kona-final-assembled.webp');
-  ghost.alt = '';
-  ghost.setAttribute('aria-hidden', 'true');
-  ghost.decoding = 'async';
-  hero.append(ghost);
   const group = document.createElement('div');
   group.className = 'mz-parts-group';
   group.setAttribute('aria-label', 'Scroll-controlled assembly of fifteen independently moving Kona exterior components');
@@ -43,37 +36,63 @@
   const cue = document.getElementById('motion-note');
   const status = document.getElementById('assembly-status');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let queued = false;
-  const clamp = n => Math.min(1,Math.max(0,n));
-  const ease = t => t*t*(3-2*t);
-  function render(){
-    queued = false;
-    const d = Math.max(1, zone.offsetHeight - window.innerHeight);
-    const p = reduced.matches ? 1 : clamp(-zone.getBoundingClientRect().top/d);
-    const multiplier = Math.min(1, hero.getBoundingClientRect().width/1280);
-    const mobile = window.innerWidth < 680 ? .75 : 1;
-    pieces.forEach((part,i) => {
-      const start = Math.min(.18, i*.012);
-      const t = ease(clamp((p-start)/(.85-start)));
-      const leftover = 1-t;
+  // One animation owner. Damp scroll input for a fluid, frame-rate-independent response.
+  const clamp = n => Math.min(1, Math.max(0, n));
+  const ease = t => t * t * (3 - 2 * t);
+  const range = (p, from, to) => clamp((p - from) / (to - from));
+  let target = 0;
+  let current = 0;
+  let animating = false;
+  let lastFrameTime = 0;
+  function paint(p){
+    const stageWidth = hero.getBoundingClientRect().width;
+    const multiplier = Math.min(1, stageWidth / 1280);
+    const mobileFactor = window.innerWidth < 680 ? .78 : 1;
+    pieces.forEach((part, i) => {
+      // Compact stagger; parts individually travel and finish before the complete car appears.
+      const start = Math.min(.105, i * .007);
+      const t = ease(range(p, start, .85));
+      const leftover = 1 - t;
       const [x,y,rotation,scale] = part.motion;
-      part.el.style.transform = `translate3d(${(x*multiplier*mobile*leftover).toFixed(1)}px, ${(y*multiplier*mobile*leftover).toFixed(1)}px, 0) rotate(${(rotation*leftover).toFixed(2)}deg) scale(${(1+(scale-1)*leftover).toFixed(3)})`;
-      part.el.style.opacity = reduced.matches ? '0' : String(Math.min(1,(.72+t*.28)));
+      part.el.style.transform = `translate3d(${(x*multiplier*mobileFactor*leftover).toFixed(2)}px, ${(y*multiplier*mobileFactor*leftover).toFixed(2)}px, 0) rotate(${(rotation*leftover).toFixed(2)}deg) scale(${(1+(scale-1)*leftover).toFixed(4)})`;
     });
-    const reveal = ease(clamp((p-.79)/.19));
-    final.style.opacity=String(reveal);
-    ghost.style.opacity=String(.42*(1-reveal));
-    group.style.opacity=String(1-reveal);
-    if(percent)percent.textContent=String(Math.round(p*100)).padStart(2,'0')+'%';
-    if(rail)rail.style.width=(p*100).toFixed(1)+'%';
-    if(status)status.textContent=p>.985 ? 'FULLY ASSEMBLED · HYUNDAI KONA CONCEPT' : '15 INDEPENDENT COMPONENTS';
-    if(cue)cue.textContent=p>.985 ? 'Assembly complete. Explore the parts collection.' : 'Scroll to assemble the Kona, part by part.';
+    // Pure black behind independent parts; crossfade only once the layers have docked.
+    const reveal = ease(range(p, .87, .985));
+    group.style.opacity = String(1 - reveal);
+    final.style.opacity = String(reveal);
+    if(percent) percent.textContent = String(Math.round(p*100)).padStart(2,'0') + '%';
+    if(rail) rail.style.width = (p*100).toFixed(2) + '%';
+    if(status) status.textContent = p > .985 ? 'FULLY ASSEMBLED · HYUNDAI KONA CONCEPT' : '15 INDEPENDENT COMPONENTS';
+    if(cue) cue.textContent = p > .985 ? 'Assembly complete. Explore the parts collection.' : 'Scroll to assemble the Kona, part by part.';
   }
-  function schedule(){if(!queued){queued=true;requestAnimationFrame(render);}}
-  window.addEventListener('scroll',schedule,{passive:true});
-  window.addEventListener('resize',schedule,{passive:true});
-  if(reduced.addEventListener)reduced.addEventListener('change',schedule);
-  render();
+  function updateTarget() {
+    const distance = Math.max(1, zone.offsetHeight - window.innerHeight);
+    target = reduced.matches ? 1 : clamp(-zone.getBoundingClientRect().top / distance);
+    if(!animating) {
+      animating = true;
+      lastFrameTime = 0;
+      requestAnimationFrame(frame);
+    }
+  }
+  function frame(now) {
+    const elapsed = lastFrameTime ? Math.min(64, now - lastFrameTime) : 16.7;
+    lastFrameTime = now;
+    // Exponential smoothing: responsive yet soft at 60/120 Hz and on touch scroll.
+    const blend = reduced.matches ? 1 : 1 - Math.exp(-elapsed / 130);
+    current += (target - current) * blend;
+    if(Math.abs(target - current) < .00035) current = target;
+    paint(current);
+    if(current !== target) {
+      requestAnimationFrame(frame);
+    } else {
+      animating = false;
+      lastFrameTime = 0;
+    }
+  }
+  window.addEventListener('scroll',updateTarget,{passive:true});
+  window.addEventListener('resize',updateTarget,{passive:true});
+  if(reduced.addEventListener) reduced.addEventListener('change',updateTarget);
+  updateTarget();
   // Maintain photorealistic catalog images from the previous media update.
   const images = {
     'front-bumper':'hyundai-kona-front-bumper.webp',

@@ -1,18 +1,16 @@
-/* Coherent photographic parts are individually cut from the same final perspective. */
+/* Motorzone assembly v2: clean black stage, independent GPU-composited parts, smooth scroll. */
 .hero-canvas.mz-photographic-assembly{
   width:min(1220px,94vw);height:auto;max-height:none;aspect-ratio:16/9;
-  top:43%;left:50%;position:absolute;overflow:visible;pointer-events:none;
+  top:43%;left:50%;position:absolute;overflow:visible;pointer-events:none;background:#000;
   transform:translate(-50%,-50%);display:block;
 }
-.mz-photographic-assembly .mz-car-ghost,
 .mz-photographic-assembly .mz-final-car,
 .mz-photographic-assembly .mz-car-piece{
   display:block;position:absolute;width:100%;height:100%;inset:0;
   object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none;
 }
-.mz-car-ghost{z-index:1;filter:grayscale(1) brightness(.38) contrast(1.3);opacity:.42}
 .mz-parts-group{position:absolute;inset:0;z-index:2;will-change:opacity}
-.mz-car-piece{will-change:transform,opacity;filter:drop-shadow(0 10px 14px rgba(0,0,0,.45))}
+.mz-car-piece{will-change:transform;backface-visibility:hidden;filter:none}
 .mz-final-car{z-index:3;opacity:0;will-change:opacity}
 .hero-scroll{height:280vh}
 .hero-sticky{height:calc(100svh - var(--header-h));min-height:660px;max-height:1000px}
@@ -47,6 +45,6 @@
 @media(prefers-reduced-motion:reduce){
   .hero-scroll{height:auto}
   .hero-sticky{position:relative;top:0;height:750px}
-  .mz-photographic-assembly .mz-car-ghost,.mz-photographic-assembly .mz-parts-group{display:none}
+  .mz-photographic-assembly .mz-parts-group{display:none}
   .mz-photographic-assembly .mz-final-car{opacity:1!important}
 }

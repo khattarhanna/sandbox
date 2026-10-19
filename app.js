@@ -149,36 +149,6 @@ function partArt(shape,id) {
  const menu=document.getElementById('menu-toggle'),nav=document.getElementById('main-nav');
  menu.addEventListener('click',()=>{const isOpen=nav.classList.toggle('mobile-open');menu.setAttribute('aria-expanded',String(isOpen));});
  nav.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{nav.classList.remove('mobile-open');menu.setAttribute('aria-expanded','false');}));
- const hero=document.getElementById('exploded-hero');
- const layers=[...document.querySelectorAll('#assembly [data-part]')];
- const counterText=document.getElementById('assembly-percent');
- const statusText=document.getElementById('assembly-status');
- const rail=document.getElementById('rail-inner');
- const motion=document.getElementById('motion-note');
- const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
- let framePending=false;
- function drawAssembly(){
-   framePending=false;
-   const bounds=hero.getBoundingClientRect();
-   const runway=Math.max(1,hero.offsetHeight-window.innerHeight);
-   const raw=Math.max(0,Math.min(1,-bounds.top/runway));
-   const progress=reduced.matches?1:raw;
-   const eased=progress<.5?2*progress*progress:1-Math.pow(-2*progress+2,2)/2;
-   for(const layer of layers){
-     const dx=Number(layer.dataset.x)||0,dy=Number(layer.dataset.y)||0,rot=Number(layer.dataset.r)||0;
-     const cx=Number(layer.dataset.cx)||550,cy=Number(layer.dataset.cy)||300;
-     const left=1-eased;
-     layer.setAttribute('transform','translate('+(dx*left).toFixed(2)+' '+(dy*left).toFixed(2)+') rotate('+(rot*left).toFixed(2)+' '+cx+' '+cy+')');
-     layer.setAttribute('opacity',(0.84+eased*.16).toFixed(2));
-   }
-   counterText.textContent=String(Math.round(progress*100)).padStart(2,'0')+'%';
-   rail.style.width=(progress*100).toFixed(1)+'%';
-   statusText.textContent=progress>.96?'Assembly complete':progress>.1?'Components aligning':'Components separated';
-   motion.textContent=progress>.96?'Ready to explore the collection.':'Scroll to bring the components together.';
- }
- function scheduleAssembly(){if(!framePending){framePending=true;requestAnimationFrame(drawAssembly);}}
- window.addEventListener('scroll',scheduleAssembly,{passive:true});
- window.addEventListener('resize',scheduleAssembly,{passive:true});
- if(reduced.addEventListener)reduced.addEventListener('change',scheduleAssembly);
- render();renderDrawer();syncCount();drawAssembly();
+ // Hero animation is owned solely by media.js to avoid duplicate scroll handlers.
+ render();renderDrawer();syncCount();
 })();
