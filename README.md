@@ -34,3 +34,8 @@ No build or install command. Vercel framework setting: Other. Both development a
 5. Test ordering and delivery end-to-end before accepting sales.
 
 The prior Al Hashem POS app was replaced on the active branch on 2026-10-19; earlier Git history and historical Vercel deployments may retain earlier code. Old POS Supabase Vercel environment variables were disabled in the preceding step, but original credentials must still be revoked from their source if they are active.
+
+
+## Realistic Motorzone concept imagery (2026-10-19)
+
+The site uses /assets/hero-hyundai-kona-exploded.webp as the Hyundai Kona exploded-assembly concept hero and nine /assets/hyundai-kona-*.webp photosimulated product images. They were generated for design purposes, are not SKU/OEM photos and should not be considered actual parts stock or guaranteed vehicle compatibility. Six sample entries have SVG placeholders pending genuine matching visuals. /media.js and /media.css layer the images onto the existing catalog and animate a gentle scroll-based hero photo transform. A single flattened image does not allow mechanically accurate parts assembly; a 3D model or independently rendered matched layers would be necessary for that effect.

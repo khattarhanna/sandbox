@@ -1,0 +1,13 @@
+
+/* Motorzone AI-rendered imagery. Images are illustrative, not OEM product photographs. */
+.hero-canvas.motorzone-kona-canvas{width:min(1420px,112%);height:78%;max-height:760px;top:41%;overflow:hidden;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.motorzone-kona-hero{width:100%;height:100%;object-fit:contain;object-position:50% 50%;display:block;will-change:transform;transform-origin:50% 50%;transition:none}
+.product-image.photo-loaded{background:#030303!important;padding:0!important}
+.product-image.photo-loaded .product-index{z-index:2;color:#dedede;text-shadow:0 1px 7px #000}
+.product-image.photo-loaded .label-preview{z-index:2;background:rgba(5,5,5,.78);color:#ddd;border:1px solid #3a3a3a}
+.product-image img.motorzone-product-image{display:block;width:100%;height:100%;object-fit:contain;object-position:center;max-height:none}
+.story-art:has(.motorzone-story-photo){background:#030303}
+.motorzone-story-photo{width:100%;height:100%;max-height:390px;object-fit:contain;object-position:center}
+@media(max-width:760px){.hero-canvas.motorzone-kona-canvas{top:39%;height:65%;width:145%;max-width:none}.motorzone-kona-hero{object-fit:contain}.hero-bottom{background:linear-gradient(transparent,#000 23%,#000 100%);padding-top:15px}}
+@media(max-width:490px){.hero-canvas.motorzone-kona-canvas{height:57%;top:41%;width:165%}.hero-top{z-index:5}.hero-bottom h1{font-size:clamp(39px,10.8vw,55px)}}
+@media(prefers-reduced-motion:reduce){.motorzone-kona-hero{transform:none!important;will-change:auto}}
