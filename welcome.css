@@ -129,3 +129,8 @@
 @media(max-width:490px){
   .mz-welcome-title{font-size:clamp(40px,10.5vw,65px)}
 }
+
+/* The Right Parts / The Right Service: balance four headline lines on smaller devices. */
+.mz-welcome-title{overflow-wrap:normal}
+@media(max-width:760px){.mz-welcome-title{font-size:clamp(47px,10vw,76px)}}
+@media(max-width:490px){.mz-welcome-title{font-size:clamp(39px,10vw,59px);line-height:.87}}
